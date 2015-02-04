@@ -137,12 +137,8 @@ bool MidiExport::tryExport( const TrackContainer::TrackList &tracks, int tempo, 
 				{
 					QDomElement note = nn.toElement();
 					if (note.attribute("len", "0") == "0" || note.attribute("vol", "0") == "0") continue;
-					#if 0
-					qDebug() << ">>>> key " << note.attribute( "key", "0" ) 
-						<< " " << note.attribute("len", "0") << " @" 
-						<< note.attribute("pos", "0");
-					#endif
-					mtrack.addNote(
+
+                    mtrack.addNote(
 						note.attribute("key", "0").toInt()+base_pitch
 						, 100 * base_volume * (note.attribute("vol", "100").toDouble()/100)
 						, (base_time+note.attribute("pos", "0").toDouble())/48
@@ -158,16 +154,6 @@ bool MidiExport::tryExport( const TrackContainer::TrackList &tracks, int tempo, 
 	return true;
 
 }
-
-
-
-
-void MidiExport::error()
-{
-	//qDebug() << "MidiExport error: " << m_error ;
-}
-
-
 
 extern "C"
 {

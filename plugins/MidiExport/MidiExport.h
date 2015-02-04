@@ -46,11 +46,6 @@ public:
 
 	virtual bool tryExport( const TrackContainer::TrackList &tracks, int tempo, const QString &filename );
 	
-private:
-	
-
-	void error( void );
-
 
 } ;
 
