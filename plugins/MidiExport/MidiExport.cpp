@@ -23,6 +23,7 @@
  */
 
 
+#include <QDebug>
 #include <QDomDocument>
 #include <QDir>
 #include <QApplication>
@@ -136,13 +137,20 @@ bool MidiExport::tryExport( const TrackContainer::TrackList &tracks, int tempo, 
 				for(QDomNode nn = n.firstChild(); !nn.isNull(); nn = nn.nextSibling())
 				{
 					QDomElement note = nn.toElement();
-					if (note.attribute("len", "0") == "0" || note.attribute("vol", "0") == "0") continue;
+					double len = note.attribute("len", "0").toDouble()/48;
+					double vol = 100 * base_volume * (note.attribute("vol", "100").toDouble()/100);
+					double time = (base_time+note.attribute("pos", "0").toDouble())/48;
+					int key = note.attribute("key", "0").toInt()+base_pitch;
 
-                    mtrack.addNote(
-						note.attribute("key", "0").toInt()+base_pitch
-						, 100 * base_volume * (note.attribute("vol", "100").toDouble()/100)
-						, (base_time+note.attribute("pos", "0").toDouble())/48
-						, (note.attribute("len", "0")).toDouble()/48);
+					if (len <= 0 || vol <= 0 || time < 0 || key < 0 || key > 127)
+					{
+						//qDebug() << ">> invalid note (time, key, len, vol) " << time << key << len << vol;
+						continue;
+					}
+
+					if (vol > 127) vol = 127;
+
+					mtrack.addNote(key, vol, time, len);
 				}
 			}
 		
